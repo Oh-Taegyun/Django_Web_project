@@ -1,0 +1,434 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>MBTI_Mapping</title>
+        <!-- Favicon-->
+        <link rel="icon" type="image/x-icon" href="{% static 'assets/favicon.ico' %}" />
+        <!-- Bootstrap Icons-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Merriweather+Sans:400,700" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic" rel="stylesheet" type="text/css" />
+        <!-- SimpleLightbox plugin CSS-->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/SimpleLightbox/2.1.0/simpleLightbox.min.css" rel="stylesheet" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+        <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=ac9587fe6dc58d6a024d15f598c0e5b3"></script>        
+    </head>
+
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light fixed-top py-3" id="mainNav">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" href="#page-top">MBTI_Mapping</a>
+                <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ms-auto my-2 my-lg-0">
+                        <li class="nav-item"><a class="nav-link" href="#about">알아보기</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#services">MBTI 'E'</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#portfolio">MBTI 'I'</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#contact">감사합니다</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- Masthead-->
+        <header class="masthead">
+            <div class="container px-4 px-lg-5 h-100">
+                <div class="row gx-4 gx-lg-5 h-100 align-items-center justify-content-center text-center">
+                    <div class="col-lg-8 align-self-end">
+                        <h1 class="text-white font-weight-bold">MBTI과 사람들 편의시설 선호도에 관한 조사</h1>
+                        <hr class="divider" />
+                    </div>
+                    <div class="col-lg-8 align-self-baseline">
+                        <p class="text-white-75 mb-5">안녕하세요 '커뮤니티 맵핑과 소셜 이노베이션' 과목을 듣는 1조 ACE입니다. 이번에 커뮤니티 맵핑 주제로 MBTI별 각종 편의시설 선호도를 조사하려고 합니다! <br><br> 여러분의 도움이 필요해요!!</p>
+                        <a class="btn btn-primary btn-xl" href="#about">자세히 알아보기</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- About-->
+        <section class="page-section bg-primary" id="about">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-lg-8 text-center">
+                        <h2 class="text-white mt-0">여러분의 도움이 필요해요!</h2>
+                        <hr class="divider divider-light" />
+                        <p class="text-white-75 mb-4">커뮤니티 맵핑은 스마트폰이나 PC에서 지역 현안사항이나 불편사항을 시민이 직접 구글맵, 마이크로소프트 빙 맵스 등이 제공하는 지리정보시스템을 활용해 교통, 생활정보, 각종 시설물 등 다양한 요소들을 시민이 직접 지도에 표시해 문제점을 해결해 나가는 새로운 형태의 시민참여형 지도 제작 기술을 말합니다.</p>
+                        <p></p>
+                        <p class="text-white-75 mb-4">여러분의 MBTI가 E인지 I인지에 따른 편의시설 가는 곳을 파악하고 싶어요! 본인의 엠비티아이와 본인이 가는 곳이 영향을 미치는지에 관한 조사입니다!</p>
+                        <a class="btn btn-light btn-xl" href="#services">조사하러가기</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services-->
+        <section class="page-section" id="services">
+            <div class="container px-4 px-lg-5">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h2 class="text-center mt-0">본인이 MBTI 중 'E'에 해당하는 경우</h2>
+                        <hr class="divider" />
+        
+                        <div id="map1" style="width: 600px; height: 600px;"></div>
+                        <script>
+                            var csrftoken = '{{ csrf_token }}';
+                            // 카카오 맵 초기화
+                            var map1 = new kakao.maps.Map(document.getElementById('map1'), {
+                                center: new kakao.maps.LatLng(37.450701, 127.128781), // 초기 중심 좌표 설정
+                                level: 3 // 확대 레벨 설정
+                            });
+                            var markers1 = []; // 마커 배열 선언
+                            kakao.maps.event.addListener(map1, 'click', function(mouseEvent) {
+                                var latlng = mouseEvent.latLng;
+                                // 마커 생성
+                                var marker = new kakao.maps.Marker({
+                                    position: latlng,
+                                    map: map1,
+                                    clickable: true
+                                });
+                                // 마커 클릭 이벤트 처리
+                                kakao.maps.event.addListener(marker, 'click', function() {
+                                    // 선택한 마커의 위치 정보 가져오기
+                                    var latlng = marker.getPosition();
+                                    var latitude = latlng.getLat();
+                                    var longitude = latlng.getLng();
+                                    var name1 = prompt('매핑 지점의 이름을 입력하세요:'); // 사용자로부터 매핑 지점 이름 입력 받기
+        
+                                    // 인포윈도우 내용을 동적으로 생성
+                                    var iwContent = '<div style="padding:5px;">' + name1 + '</div>';
+        
+                                    // 인포윈도우를 생성하고 마커 위에 표시
+                                    var infowindow = new kakao.maps.InfoWindow({
+                                        content: iwContent,
+                                        removable: true,
+                                        position: latlng
+                                    });
+        
+                                    infowindow.open(map1);
+        
+                                    // Ajax 요청 보내기
+                                    var xhr = new XMLHttpRequest();
+                                    xhr.open("POST", "/save_marker_data_E/", true);
+                                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                                    xhr.setRequestHeader("Content-Type", "application/json");
+        
+                                    // 서버로 전송할 데이터
+                                    var data = {
+                                        "latitude": latitude,
+                                        "longitude": longitude,
+                                        "name": name1
+                                    };
+        
+                                    // 응답 처리
+                                    xhr.onreadystatechange = function() {
+                                        if (xhr.readyState === XMLHttpRequest.DONE) {
+                                            if (xhr.status === 200) {
+                                                // 응답을 받았을 때 원하는 동작 수행
+                                                // 예: 성공 메시지 표시, 추가 작업 수행 등
+                                                alert('매핑 지점이 저장되었습니다.');
+                                            } else {
+                                                // 요청이 실패한 경우에 대한 처리
+                                                alert('매핑 지점 저장에 실패했습니다.');
+                                            }
+                                        }
+                                    };
+        
+                                    // 데이터 전송
+                                    xhr.send(JSON.stringify(data));
+                                });
+                                // 생성한 마커를 배열에 저장
+                                markers1.push(marker);
+                            });
+                        </script>
+                    </div>
+        
+                    <div class="col-lg-6">
+                        <br>
+                        <br>
+                        <br>
+                        <h2 class="text-center mt-0">설문조사</h2>
+                        <hr class="divider" />
+                    
+                        <form id="contactForm" method="POST" action="{% url 'form_submit_E' %}" class="needs-validation" novalidate >
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="mbti" class="form-label">1. 선택한 곳에 'E'나 'I'중 어느 사람이 많이 갈 것 같나요?</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input type="checkbox" class="form-check-input" id="mbti_e" name="mbti" value="E">
+                                    <label class="form-check-label" for="mbti_e">E</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input type="checkbox" class="form-check-input" id="mbti_i" name="mbti" value="I">
+                                    <label class="form-check-label" for="mbti_i">I</label>
+                                </div>
+                            </div>
+                    
+                            <div class="mb-3">
+                                <label for="influence" class="form-label">2. 본인의 MBTI가 본인이 가는 곳이 영향을 미친다고 생각하시나요?</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input type="checkbox" class="form-check-input" id="influence_yes" name="influence" value="yes">
+                                    <label class="form-check-label" for="influence_yes">예</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input type="checkbox" class="form-check-input" id="influence_no" name="influence" value="no">
+                                    <label class="form-check-label" for="influence_no">아니요</label>
+                                </div>
+                            </div>
+                    
+                            <div class="mb-3">
+                                <label for="comments" class="form-label">3. 그 외 하실 말씀 자유롭게 적어주세요</label><br>
+                                <textarea id="comments" name="comments" rows="4" cols="50" class="form-control"></textarea>
+                            </div>
+                    
+                            <button type="submit" class="btn btn-primary">제출</button>
+                        </form>
+                    </div>
+            </div>
+        </section>
+        
+
+        
+        <!-- Call to action-->
+        <section class="page-section bg-dark text-white" id="portfolio">
+            <div class="container px-4 px-lg-5">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h2 class="text-center mt-0">본인이 MBTI 중 'I'에 해당하는 경우</h2>
+                        <hr class="divider" />
+        
+                        <div id="map2" style="width: 600px; height: 600px;"></div>
+                        <script>
+                            var csrftoken = '{{ csrf_token }}';
+                            // 카카오 맵 초기화
+                            var map2 = new kakao.maps.Map(document.getElementById('map2'), {
+                                center: new kakao.maps.LatLng(37.450701, 127.128781), // 초기 중심 좌표 설정
+                                level: 3 // 확대 레벨 설정
+                            });
+                            var markers2 = []; // 마커 배열 선언
+                            kakao.maps.event.addListener(map2, 'click', function(mouseEvent) {
+                                var latlng = mouseEvent.latLng;
+                                // 마커 생성
+                                var marker = new kakao.maps.Marker({
+                                    position: latlng,
+                                    map: map2,
+                                    clickable: true
+                                });
+                                // 마커 클릭 이벤트 처리
+                                kakao.maps.event.addListener(marker, 'click', function() {
+                                    // 선택한 마커의 위치 정보 가져오기
+                                    var latlng = marker.getPosition();
+                                    var latitude = latlng.getLat();
+                                    var longitude = latlng.getLng();
+                                    var name2 = prompt('매핑 지점의 이름을 입력하세요:'); // 사용자로부터 매핑 지점 이름 입력 받기
+        
+                                    // 인포윈도우 내용을 동적으로 생성
+                                    var iwContent = '<div style="padding:5px;">' + name2 + '</div>';
+        
+                                    // 인포윈도우를 생성하고 마커 위에 표시
+                                    var infowindow = new kakao.maps.InfoWindow({
+                                        content: iwContent,
+                                        removable: true,
+                                        position: latlng
+                                    });
+        
+                                    infowindow.open(map2);
+        
+                                    // Ajax 요청 보내기
+                                    var xhr = new XMLHttpRequest();
+                                    xhr.open("POST", "/save_marker_data_I/", true);
+                                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                                    xhr.setRequestHeader("Content-Type", "application/json");
+        
+                                    // 서버로 전송할 데이터
+                                    var data = {
+                                        "latitude": latitude,
+                                        "longitude": longitude,
+                                        "name": name2
+                                    };
+        
+                                    // 응답 처리
+                                    xhr.onreadystatechange = function() {
+                                        if (xhr.readyState === XMLHttpRequest.DONE) {
+                                            if (xhr.status === 200) {
+                                                // 응답을 받았을 때 원하는 동작 수행
+                                                // 예: 성공 메시지 표시, 추가 작업 수행 등
+                                                alert('매핑 지점이 저장되었습니다.');
+                                            } else {
+                                                // 요청이 실패한 경우에 대한 처리
+                                                alert('매핑 지점 저장에 실패했습니다.');
+                                            }
+                                        }
+                                    };
+        
+                                    // 데이터 전송
+                                    xhr.send(JSON.stringify(data));
+                                });
+                                // 생성한 마커를 배열에 저장
+                                markers2.push(marker);
+                            });
+                        </script>
+                    </div>
+        
+                    <div class="col-lg-6">
+                        <br>
+                        <br>
+                        <br>
+                        <h2 class="text-center mt-0">설문조사</h2>
+                        <hr class="divider" />
+                    
+                        <form id="contactForm" action="{% url 'form_submit_I' %}" method="POST" class="needs-validation" novalidate>
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="mbti" class="form-label">1. 선택한 곳에 'E'나 'I'중 어느 사람이 많이 갈 것 같나요?</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input type="checkbox" class="form-check-input" id="mbti_e" name="mbti" value="E">
+                                    <label class="form-check-label" for="mbti_e">E</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input type="checkbox" class="form-check-input" id="mbti_i" name="mbti" value="I">
+                                    <label class="form-check-label" for="mbti_i">I</label>
+                                </div>
+                            </div>
+                    
+                            <div class="mb-3">
+                                <label for="influence" class="form-label">2. 본인의 MBTI가 본인이 가는 곳이 영향을 미친다고 생각하시나요?</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input type="checkbox" class="form-check-input" id="influence_yes" name="influence" value="yes">
+                                    <label class="form-check-label" for="influence_yes">예</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input type="checkbox" class="form-check-input" id="influence_no" name="influence" value="no">
+                                    <label class="form-check-label" for="influence_no">아니요</label>
+                                </div>
+                            </div>
+                    
+                            <div class="mb-3">
+                                <label for="comments" class="form-label">3. 그 외 하실 말씀 자유롭게 적어주세요</label><br>
+                                <textarea id="comments" name="comments" rows="4" cols="50" class="form-control"></textarea>
+                            </div>
+                    
+                            <button type="submit" class="btn btn-primary">제출</button>
+                        </form>
+                    </div>
+            </div>
+        </section>
+
+        <!-- Contact-->
+        <section class="page-section" id="contact">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-lg-8 col-xl-6 text-center">
+                        <h2 class="mt-0">설문조사에 참여해주셔서 감사합니다!</h2>
+                        <hr class="divider" />
+                        <p class="text-muted mb-5">참여해주신 설문조사의 데이터는 프로젝트 분석에 소중하게 사용하겠습니다!</p>
+                        <p class="text-muted mb-5">처음으로 만들어본 웹사이트라서 많이 미숙합니다. 다양한 의견, 웹사이트 제작도 받습니다!</p>
+                        <p class="text-muted mb-5">만든사람 Email - luili0307@naver.com</p>
+                    </div>
+                </div>
+
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-lg-4 text-center mb-5 mb-lg-0">
+                        <i class="bi-phone fs-2 mb-3 text-muted"></i>
+                        <div></div>
+                    </div>
+                    
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Footer-->
+        <footer class="bg-light py-5">
+            <div class="container px-4 px-lg-5"><div class="small text-center text-muted">Copyright &copy; 2023 - luili0307@naver.com</div></div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- SimpleLightbox plugin JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/SimpleLightbox/2.1.0/simpleLightbox.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="{% static 'js/scripts.js' %}"></script>
+        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
+        <!-- * *                               SB Forms JS                               * *-->
+        <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
+        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
+        <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
+
+        <script>
+				function initMap() {
+					// 맵 초기화 로직
+			
+					// 서버에서 마커 데이터 가져오기
+					fetch('/get_marker_data_E/')
+					.then(response => response.json())
+					.then(data => {
+					    if (data.marker_data) {
+					    // 가져온 데이터를 기반으로 마커 표시 로직
+						    for (let marker of data.marker_data) {
+						        let position = new kakao.maps.LatLng(marker.latitude, marker.longitude);
+						    	let mapMarker = new kakao.maps.Marker({
+                                    position: position
+                                });
+                                mapMarker.setMap(map1);
+
+                                // 인포윈도우 생성 및 이름 출력
+                                let infowindow = new kakao.maps.InfoWindow({
+                                    content: marker.name,
+                                    removable: true // 인포윈도우에 닫기 버튼 추가
+                                });
+
+                                kakao.maps.event.addListener(mapMarker, 'click', function() {
+                                    infowindow.open(map1, mapMarker);
+                                });
+						    }
+                        }
+					})
+					.catch(error => {
+						console.error('Error:', error);
+					});
+
+                    fetch('/get_marker_data_I/')
+					.then(response => response.json())
+					.then(data => {
+					    if (data.marker_data) {
+					    // 가져온 데이터를 기반으로 마커 표시 로직
+						    for (let marker of data.marker_data) {
+						        let position = new kakao.maps.LatLng(marker.latitude, marker.longitude);
+						    	let mapMarker = new kakao.maps.Marker({
+                                    position: position
+                                });
+                                mapMarker.setMap(map2);
+
+                                // 인포윈도우 생성 및 이름 출력
+                                let infowindow = new kakao.maps.InfoWindow({
+                                    content: marker.name,
+                                    removable: true // 인포윈도우에 닫기 버튼 추가
+                                });
+
+                                kakao.maps.event.addListener(mapMarker, 'click', function() {
+                                    infowindow.open(map2, mapMarker);
+                                });
+						    }
+                        }
+					})
+					.catch(error => {
+						console.error('Error:', error);
+					});
+                        
+				}
+                
+
+				window.onload = function() {
+        			initMap();
+    			};
+			</script>
+
+    </body>
+</html>
